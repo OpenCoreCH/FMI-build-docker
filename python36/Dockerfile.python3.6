@@ -9,11 +9,13 @@ ADD 713a47ba57be9148d3fccfa7ad8afe987133132189330b193bdcf661e04f5b2e.tar.xz /
 ADD 7254e707595aaf8e86dd0e39d6b66cdcf0f8b4abb7d2a996e78334ecaba37b1c.tar.xz /
 ADD cc2e895fc928b7ef54b063492fc093280a235c39c5d390f29c3f7622608b90a0.tar.xz /
 
-RUN yum -y groupinstall "Development Tools" && yum -y install openssl openssl-devel libcurl libcurl-devel gcc72 gcc72-c++ python36-devel
+RUN yum -y groupinstall "Development Tools" && yum -y install openssl openssl-devel libcurl libcurl-devel gcc72 gcc72-c++
 RUN curl -O https://cmake.org/files/v3.18/cmake-3.18.0.tar.gz && tar -xvf cmake-3.18.0.tar.gz && cd cmake-3.18.0 && ./bootstrap && make -j6 install && cd .. && rm -rf cmake*
-RUN curl -LO https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz && tar -xvf boost_1_77_0.tar.gz && cd boost_1_77_0 && ./bootstrap.sh --with-python=python3 && ./b2 cxxflags="-fPIC" link=static install && cd .. && rm -rf boost*
-RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git && cd aws-sdk-cpp && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY="s3" -DBUILD_SHARED_LIBS="off" .. && make -j6 install && cd ../.. && rm -rf aws-sdk-cpp
-RUN git clone https://github.com/redis/hiredis.git && cd hiredis/ && make install && rm -rf hiredis
+RUN curl -LO https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz && tar -xvf boost_1_77_0.tar.gz && \
+    cd boost_1_77_0 && ./bootstrap.sh --with-python=python3 && ./b2 cxxflags="-fPIC" link=static install && cd .. && rm -rf boost*
+RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git && cd aws-sdk-cpp && mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY="s3" -DBUILD_SHARED_LIBS="off" .. && make -j6 install && cd ../.. && rm -rf aws-sdk-cpp
+RUN git clone https://github.com/redis/hiredis.git && cd hiredis/ && make install && cd .. && rm -rf hiredis
 
 ENV LANG=en_US.UTF-8
 ENV TZ=:/etc/localtime

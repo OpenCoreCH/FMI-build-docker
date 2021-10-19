@@ -1,0 +1,24 @@
+FROM scratch
+
+ADD 02f1c39ddc0f25bda8cf761c86cce82c4631dec588d9735d22e25087ad4993eb.tar.xz /
+ADD 084609b797a80faf93b7b4640e4c5a90fd613f6b4e221db7d2bf027d3978c7eb.tar.xz /
+ADD 0de26ce3460e2eb08a35ba91d08d2957b67107028f59ef3bf612540b38931357.tar.xz /
+ADD 618251fb1303f4740285f1a6dd73ea6a7058cc79b256145d5fcc6eb3ab185508.tar.xz /
+ADD 7254e707595aaf8e86dd0e39d6b66cdcf0f8b4abb7d2a996e78334ecaba37b1c.tar.xz /
+ADD b56ee73c9a27d35e02f4136454bc6f86870f201f209b4c906b9a6f3e588b97e7.tar.xz /
+
+ENV LANG=en_US.UTF-8
+ENV TZ=:/etc/localtime
+ENV PATH=/var/lang/bin:/usr/local/bin:/usr/bin/:/bin:/opt/bin
+ENV LD_LIBRARY_PATH=/var/lang/lib:/lib64:/usr/lib64:/var/runtime:/var/runtime/lib:/var/task:/var/task/lib:/opt/lib
+ENV LAMBDA_TASK_ROOT=/var/task
+ENV LAMBDA_RUNTIME_DIR=/var/runtime
+
+RUN yum -y groupinstall "Development Tools" && yum -y install openssl openssl-devel libcurl libcurl-devel gcc72 gcc72-c++ which
+RUN curl -O https://cmake.org/files/v3.18/cmake-3.18.0.tar.gz && tar -xvf cmake-3.18.0.tar.gz && cd cmake-3.18.0 && ./bootstrap && make -j6 install && cd .. && rm -rf cmake*
+RUN curl -LO https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.gz && tar -xvf boost_1_77_0.tar.gz && \
+    cd boost_1_77_0 && ./bootstrap.sh && ./b2 cxxflags="-fPIC" link=static install && cd .. && rm -rf boost*
+RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git && cd aws-sdk-cpp && mkdir build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_ONLY="s3" -DBUILD_SHARED_LIBS="off" .. && make -j6 install && cd ../.. && rm -rf aws-sdk-cpp
+RUN git clone https://github.com/redis/hiredis.git && cd hiredis/ && make install && cd .. && rm -rf hiredis
+
