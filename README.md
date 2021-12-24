@@ -6,8 +6,8 @@ Docker images that facilitate the compilation of the FMI library by installing/c
 
 To compile the library for the `python36` runtime:
 ```sh
-docker build -t python36build:1.0 -f Dockerfile.python3.6 .
-docker run -it --mount type=bind,source=/path_to/FMI/,target=/opt/smi/ --rm python36build:1.0 bash -c "mkdir -p /opt/smi/python/build/ && cd /opt/smi/python/build/ && cmake -DPython3_INCLUDE_DIR=/usr/include/python3.6m/ .. && make"
+docker build -t fmi-build-python36 -f Dockerfile.python3.6 .
+docker run -it --mount type=bind,source=/path_to/FMI/,target=/opt/fmi/ --rm fmi-build-python36:latest bash -c "mkdir -p /opt/fmi/python/build/ && cd /opt/fmi/python/build/ && cmake -DPython3_INCLUDE_DIR=/usr/include/python3.6m/ .. && make"
 ```
 
 The variable `Python3_INCLUDE_DIR` only needs to be set for the `python36` container, for all others `cmake ..` can be used.
